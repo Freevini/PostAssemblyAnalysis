@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #./PostAssemblyAnalysis.R -a data/testGenome.fasta -F data/testReads_R1.fastq -R data/testReads_R2.fastq -o testOut/
-
+#install.packages("optparse")
 library("optparse")
 
 option_list = list(
