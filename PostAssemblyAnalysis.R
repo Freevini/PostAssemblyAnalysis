@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
+
+##Usage example
 #./PostAssemblyAnalysis.R -a data/testGenome.fasta -F data/testReads_R1.fastq -R data/testReads_R2.fastq -o testOut/
 #install.packages("optparse")
 library("optparse")
@@ -20,7 +22,10 @@ option_list = list(
               help="Output directory for all files created", metavar="PATH"),
   
   make_option(c("-t", "--threads"), type="numeric", default="5", 
-              help="number of threads", metavar="threads")
+              help="number of threads", metavar="threads"),
+  
+  make_option(c("-db", "--BlastDB"), type="character", default="Stdout", 
+              help="Blast database used for blast search", metavar="blast")
   
   
   
@@ -98,7 +103,7 @@ system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
 
 system(paste0("bwa index ",opt$assembly))
 
-system(paste0("bwa mem ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
+system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
 system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
 
 ##Unmapped
@@ -111,15 +116,25 @@ system(paste0("qualimap bamqc -bam ",opt$output,"/Allillumina2assembly/rawIllumi
 system(paste0("samtools index ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam "))
 
 
-  ###--------------
-  ##03_AllIllumina2Assembly
-  ###--------------
+if (opt$BlastDB!="NA") {
+
+  
+
+cat("##--------------------------------",'\n')   
+cat("##03 Blast",'\n')
+cat("##--------------------------------",'\n') 
+cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+system(paste0("mkdir -p ",opt$output,"/Blast/"))
 
 
-  # 
-  # $QUAL_ROOT/qualimap bamqc -bam $Overall_output_directory/Allillumina2assembly/rawIllumina_${species}_${name}_bwamem_Scaffolds_sorted.bam -outdir $Overall_output_directory/Allillumina2assembly/bamqc --java-mem-size=2G
-  # 
-  # samtools index $Overall_output_directory/Allillumina2assembly/rawIllumina_${species}_${name}_bwamem_Scaffolds_sorted.bam
+paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam "\
+" -outfmt \"6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen\" " ,\
+" -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt "," -evalue 0.01 -word_size 12")
+
+}else {
+  cat("No BLASTdb: skipping blastn", '\n')
+  
+}
 
 
 #print()
@@ -183,7 +198,7 @@ system(paste0("samtools index ",opt$output,"/Allillumina2assembly/rawIllumina_bw
 #   print("===================================================") 
 #       print(id)
 #   print("===================================================") 
-#   
+#   d
 #   
 #   system(paste0("grep 's__' /home/vincent/Desktop/Projects/oldRMKs_20181031/03_metaphlan2/",id,"_raw/metaphlan_profile/profiled_metagenome_",id,"_raw.txt | grep -v 't__'| cut -d '|' -f 7
 # "))
