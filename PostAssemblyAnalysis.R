@@ -27,10 +27,14 @@ option_list = list(
   make_option(c("-t", "--threads"), type="numeric", default="5", 
               help="number of threads", metavar="threads"),
   
+  make_option(c("-s", "--sniffles"), type="character", default="NULL", 
+              help="Do you want to sniffle for rearrangments Y/N [default N]", metavar="N"),
+  
+  make_option(c("-n", "--nucmer"), type="character", default="NULL", 
+              help="Do you want to run nucmer Y/N [default N]", metavar="N"),
+  
   make_option(c("-db", "--BlastDB"), type="character", default="Stdout", 
               help="Blast database used for blast search", metavar="blast")
-  
-  
   
   
 ); 
@@ -50,6 +54,9 @@ cat(paste(c("reverse Read:",opt$reverse), collapse='\t'), '\n')
 cat(paste(c("Long Reads:",opt$LongRead), collapse='\t'), '\n')
 cat(paste(c("output directory:",opt$output), collapse='\t'), '\n')
 cat(paste(c("number of threads:",opt$threads), collapse='\t'), '\n')
+cat(paste(c("Sniffles:",opt$sniffles), collapse='\t'), '\n')
+cat(paste(c("Nucmer:",opt$nucmer), collapse='\t'), '\n')
+
 # 
 # if (opt$threads=="NA"){opt$threads <- 5}
 # cat(opt$threads)
@@ -69,7 +76,7 @@ cat("##--------------------------------",'\n')
 if (opt$LongRead!="NA") {
   system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/bamqc"))
   
-  cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+  cat(paste(c("Start and go:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
   
   #system(paste0("cat ",opt$forward, " ",opt$forward," > ", opt$output,"/RawReadsMerged/rawReadsMerged.fastq"))
   
@@ -77,9 +84,10 @@ if (opt$LongRead!="NA") {
   #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam"))
   #system(paste0("samtools view -bS " ,opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam | samtools sort - ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted "))
   
-
- system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@8 -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
-
+#cat("goGogo")
+ system(paste0("minimap2 -a -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@",opt$threads," -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
+ #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@8 -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
+ 
 
 
   ##Unmapped
@@ -135,7 +143,7 @@ system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
 
 #system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
 
-system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@8 -O BAM -o ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam - "))
+system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam - "))
 # | samtools sort -@8 -O BAM -o $Overall_output_directory/0${num}_${run}Freebayes/rawIlluminaMapped/rawIllumina_${name}_bwamem_Assembly_sorted.bam - 
 
 #system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
@@ -171,14 +179,65 @@ cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
 system(paste0("mkdir -p ",opt$output,"/Blast/"))
 
 
-paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam " \
-" -outfmt \"6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen\" " , \
-" -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt "," -evalue 0.01 -word_size 12")
+paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam " ,
+" -outfmt \"6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen\" " , " -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt "," -evalue 0.01 -word_size 12")
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
   
 }
+
+
+##-------   
+##NGMLR 
+##-------   
+
+if (opt$sniffles=="Y") {
+  
+  sytem(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/{mapping,sniffles}" ))
+  
+  system(paste0("ngmlr -t ",opt$threads,
+                " -r ", opt$assembly ,
+                " -q ", opt$LongRead ,
+                " |samtools sort -@8 -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam - " ))
+  
+  system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam"))
+  
+  
+  system(paste0("sniffles -t ", opt$threads , " -m " , opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam -v " ,opt$output ,"/rawReads2assembly_nglmr/sniffles$Overall_output_directory/ngmlr_sniffles/sniffles/sniffles2assembly.vcf"))
+  
+
+} else {
+  cat("Sniffles step skipped", '\n')
+  
+}
+
+
+###==========================
+##nucmer
+###==========================
+
+
+
+if (opt$nucmer=="Y") {
+  
+  sytem(paste0("mkdir -p ",opt$output,"/nucmer/" ))
+  
+  system(paste0("cd " ,opt$output ,"/nucmer/"))
+   
+  system(paste0("nucmer -maxmatch -nosimplify ",opt$assembly , " " ,opt$assembly))
+
+  system(paste0("delta-filter -i 95 -l 50000 ",opt$output ,"/nucmer/out.delta > " ,opt$output ,"/nucmer/filtered_095_5000bp.txt "))
+  
+  system(paste0("grep \"[[:space:]]\" ",opt$output ,"/nucmer/filtered_095_5000bp.txt >  | grep -v "/" > " ,opt$output ,"/nucmer/filtered_095_5000bp_CLEANED.txt "))
+  
+  
+} else {
+  cat("nucmer step skipped", '\n')
+  
+}
+
+
 
 
 #print()
