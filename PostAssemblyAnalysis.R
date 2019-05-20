@@ -180,7 +180,7 @@ system(paste0("mkdir -p ",opt$output,"/Blast/"))
 
 
 paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam " ,
-" -outfmt \"6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen\" " , " -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt "," -evalue 0.01 -word_size 12")
+" -outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt -evalue 0.01 -word_size 12")
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
@@ -199,7 +199,7 @@ if (opt$sniffles=="Y") {
   system(paste0("ngmlr -t ",opt$threads,
                 " -r ", opt$assembly ,
                 " -q ", opt$LongRead ,
-                " |samtools sort -@8 -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam - " ))
+                " |samtools sort -@",opt$threads," -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam - " ))
   
   system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam"))
   
