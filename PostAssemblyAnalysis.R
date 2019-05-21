@@ -65,109 +65,109 @@ cat(paste(c("Blast DB:",opt$BlastDB), collapse='\t'), '\n')
 cat("##--------------------------------",'\n')   
 cat("##01 create ouput directories",'\n')
 cat("##--------------------------------",'\n') 
-# 
-# cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
-# 
-# system(paste0("mkdir -p ",opt$output,"/RawReadsMerged"))
-# 
-# cat(paste(c("End:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
-# 
-# cat("##--------------------------------",'\n')   
-# cat("##01 rawRead mapping minimap2 to assembly",'\n')
-# cat("##--------------------------------",'\n') 
-# if (opt$LongRead!="NA") {
-#   system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/bamqc"))
-#   
-#   cat(paste(c("Start and go:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
-#   
-#   #system(paste0("cat ",opt$forward, " ",opt$forward," > ", opt$output,"/RawReadsMerged/rawReadsMerged.fastq"))
-#   
-#  
-#   #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam"))
-#   #system(paste0("samtools view -bS " ,opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam | samtools sort - ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted "))
-#   
-# #cat("goGogo")
-#  system(paste0("minimap2 -a -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@",opt$threads," -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
-#  #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@8 -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
-#  
-# 
-# 
-#   ##Unmapped
-#   system(paste0("samtools view -b -f 4 ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam" ))
-#   system(paste0("bedtools bamtofastq -i ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq"))
-#   
-#   ##Qualimap
-#   
-#   system(paste0("qualimap bamqc -bam ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam -outdir ",opt$output,"/rawReads2assembly_minimap2/bamqc  --java-mem-size=2G"))
-#   
-#   system(paste0("samtools index ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam "))
-#   
-#   # system(paste0("awk -f /home/bioinf/extradrv/fastq2fasta-master/fastq2fasta.awk \
-#   #  $Overall_output_directory/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq > \
-#   #  $Overall_output_directory/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fasta
-#   # 
-# 
-#   cat(paste(c("End:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
-#   
-#   
-# }else {
-#   cat("No long reads supplied: skipping Minimap2", '\n')
-#   
-# }
-# 
-# 
-# cat("##--------------------------------",'\n')   
-# cat("##002 BWA Index",'\n')
-# cat("##--------------------------------",'\n') 
-# if (opt$index=="Y") {
-#   system(paste0("bwa index ",opt$assembly))
-#   
-# } else if (opt$index=="N") {
-#   cat("No BWA index needed: skipping indexing", '\n')
-#   
-# } else {
-#   cat("Index parameter not recognised", '\n')
-#   
-# }
-# 
-# cat("##--------------------------------",'\n')   
-# cat("##02 AllIllumina Reads 2 Assembly",'\n')
-# cat("##--------------------------------",'\n') 
-# 
-# 
-# if (opt$forward!="NA") {
-# 
-# 
-# cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
-# system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
-# 
-# #system(paste0("bwa index ",opt$assembly))
-# 
-# #system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
-# 
-# system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam - "))
-# # | samtools sort -@8 -O BAM -o $Overall_output_directory/0${num}_${run}Freebayes/rawIlluminaMapped/rawIllumina_${name}_bwamem_Assembly_sorted.bam - 
-# 
-# #system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
-# 
-# 
-# 
-# ##Unmapped
-# system(paste0("samtools view -b -f 4 ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam > ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam" ))
-# system(paste0("bedtools bamtofastq -i ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.fastq"))
-# 
-# ##Qualimap
-# 
-# system(paste0("qualimap bamqc -bam ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam -outdir ",opt$output,"/Allillumina2assembly/bamqc  --java-mem-size=2G"))
-# system(paste0("samtools index ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam "))
-# 
-# 
-# 
-# } else {
-#   cat("No Illumina data given", '\n')
-# 
-# }
-# 
+
+cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+
+system(paste0("mkdir -p ",opt$output,"/RawReadsMerged"))
+
+cat(paste(c("End:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+
+cat("##--------------------------------",'\n')
+cat("##01 rawRead mapping minimap2 to assembly",'\n')
+cat("##--------------------------------",'\n')
+if (opt$LongRead!="NA") {
+  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/bamqc"))
+
+  cat(paste(c("Start and go:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+
+  #system(paste0("cat ",opt$forward, " ",opt$forward," > ", opt$output,"/RawReadsMerged/rawReadsMerged.fastq"))
+
+
+  #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam"))
+  #system(paste0("samtools view -bS " ,opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam | samtools sort - ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted "))
+
+#cat("goGogo")
+ system(paste0("minimap2 -a -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@",opt$threads," -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
+ #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@8 -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
+
+
+
+  ##Unmapped
+  system(paste0("samtools view -b -f 4 ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam" ))
+  system(paste0("bedtools bamtofastq -i ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq"))
+
+  ##Qualimap
+
+  system(paste0("qualimap bamqc -bam ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam -outdir ",opt$output,"/rawReads2assembly_minimap2/bamqc  --java-mem-size=2G"))
+
+  system(paste0("samtools index ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam "))
+
+  # system(paste0("awk -f /home/bioinf/extradrv/fastq2fasta-master/fastq2fasta.awk \
+  #  $Overall_output_directory/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq > \
+  #  $Overall_output_directory/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fasta
+  #
+
+  cat(paste(c("End:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+
+
+}else {
+  cat("No long reads supplied: skipping Minimap2", '\n')
+
+}
+
+
+cat("##--------------------------------",'\n')
+cat("##002 BWA Index",'\n')
+cat("##--------------------------------",'\n')
+if (opt$index=="Y") {
+  system(paste0("bwa index ",opt$assembly))
+
+} else if (opt$index=="N") {
+  cat("No BWA index needed: skipping indexing", '\n')
+
+} else {
+  cat("Index parameter not recognised", '\n')
+
+}
+
+cat("##--------------------------------",'\n')
+cat("##02 AllIllumina Reads 2 Assembly",'\n')
+cat("##--------------------------------",'\n')
+
+
+if (opt$forward!="NA") {
+
+
+cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
+system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
+
+#system(paste0("bwa index ",opt$assembly))
+
+#system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
+
+system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam - "))
+# | samtools sort -@8 -O BAM -o $Overall_output_directory/0${num}_${run}Freebayes/rawIlluminaMapped/rawIllumina_${name}_bwamem_Assembly_sorted.bam -
+
+#system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
+
+
+
+##Unmapped
+system(paste0("samtools view -b -f 4 ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam > ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam" ))
+system(paste0("bedtools bamtofastq -i ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.fastq"))
+
+##Qualimap
+
+system(paste0("qualimap bamqc -bam ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam -outdir ",opt$output,"/Allillumina2assembly/bamqc  --java-mem-size=2G"))
+system(paste0("samtools index ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam "))
+
+
+
+} else {
+  cat("No Illumina data given", '\n')
+
+}
+
 
 
 if (opt$BlastDB!="NA") {
