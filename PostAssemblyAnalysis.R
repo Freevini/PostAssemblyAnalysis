@@ -9,7 +9,7 @@ option_list = list(
   make_option(c("-a", "--assembly"), type="character", default=NULL, 
               help="Input Assembly", metavar="fasta"),
   
-  make_option(c("-n", "--name"), type="character", default=NULL, 
+  make_option(c("-x", "--name"), type="character", default=NULL, 
               help="sample Name", metavar="NA"),
   
   make_option(c("-i", "--index"), type="character", default=NULL, 
@@ -50,6 +50,7 @@ if (is.null(opt$assembly)){
   stop("At least one argument must be supplied (input file).n", call.=FALSE)
 }
 
+cat(paste(c("Sample name:",opt$name), collapse='\t'), '\n')
 cat(paste(c("Genome Assembly:",opt$assembly), collapse='\t'), '\n')
 cat(paste(c("Index: ",opt$index), collapse='\t'), '\n')
 cat(paste(c("forward Read:",opt$forward), collapse='\t'), '\n')
