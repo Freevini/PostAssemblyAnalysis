@@ -183,7 +183,7 @@ cat("##03 Blast",'\n')
 cat("##--------------------------------",'\n') 
 cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
 system(paste0("mkdir -p ",opt$output,"/Blast/"))
-#cat(paste(c("hello","world_01")))
+cat(paste(c("hello","world_01")))
 
 
 system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
@@ -200,7 +200,7 @@ system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs
 
 if (opt$sniffles=="Y") {
   
-  sytem(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/{mapping,sniffles}" ))
+  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/{mapping,sniffles}" ))
   
   system(paste0("ngmlr -t ",opt$threads,
                 " -r ", opt$assembly ,
