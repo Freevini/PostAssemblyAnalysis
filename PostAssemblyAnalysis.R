@@ -9,6 +9,9 @@ option_list = list(
   make_option(c("-a", "--assembly"), type="character", default=NULL, 
               help="Input Assembly", metavar="fasta"),
   
+  make_option(c("-n", "--name"), type="character", default=NULL, 
+              help="sample Name", metavar="NA"),
+  
   make_option(c("-i", "--index"), type="character", default=NULL, 
               help="Is an Index needed Y/N [default Y]", metavar="Y"),
   
@@ -87,20 +90,20 @@ if (opt$LongRead!="NA") {
   #system(paste0("samtools view -bS " ,opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds.sam | samtools sort - ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted "))
 
 #cat("goGogo")
- system(paste0("minimap2 -a -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@",opt$threads," -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
+ system(paste0("minimap2 -a -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@",opt$threads," -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted.bam - "))
  #system(paste0("minimap2 -t ",opt$threads," -ax map-ont ",opt$assembly," ", opt$LongRead, " | samtools sort -@8 -O BAM -o ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam - "))
 
 
 
   ##Unmapped
-  system(paste0("samtools view -b -f 4 ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam > ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam" ))
-  system(paste0("bedtools bamtofastq -i ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq"))
+  system(paste0("samtools view -b -f 4 ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted.bam > ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted_unmapped.bam" ))
+  system(paste0("bedtools bamtofastq -i ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted_unmapped.bam -fq ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted_unmapped.fastq"))
 
   ##Qualimap
 
-  system(paste0("qualimap bamqc -bam ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam -outdir ",opt$output,"/rawReads2assembly_minimap2/bamqc  --java-mem-size=2G"))
+  system(paste0("qualimap bamqc -bam ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted.bam -outdir ",opt$output,"/rawReads2assembly_minimap2/bamqc  --java-mem-size=2G"))
 
-  system(paste0("samtools index ",opt$output,"/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted.bam "))
+  system(paste0("samtools index ",opt$output,"/rawReads2assembly_minimap2/",opt$name,"_rawReads_minimap2Mapped_sorted.bam "))
 
   # system(paste0("awk -f /home/bioinf/extradrv/fastq2fasta-master/fastq2fasta.awk \
   #  $Overall_output_directory/rawReads2assembly_minimap2/rawReads_minimap2Mapped_Scaffolds_sorted_unmapped.fastq > \
@@ -153,13 +156,13 @@ system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forwar
 
 
 ##Unmapped
-system(paste0("samtools view -b -f 4 ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam > ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam" ))
-system(paste0("bedtools bamtofastq -i ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.bam -fq ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted_unmapped.fastq"))
+system(paste0("samtools view -b -f 4 ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted.bam > ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted_unmapped.bam" ))
+system(paste0("bedtools bamtofastq -i ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted_unmapped.bam -fq ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted_unmapped.fastq"))
 
 ##Qualimap
 
-system(paste0("qualimap bamqc -bam ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam -outdir ",opt$output,"/Allillumina2assembly/bamqc  --java-mem-size=2G"))
-system(paste0("samtools index ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam "))
+system(paste0("qualimap bamqc -bam ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted.bam -outdir ",opt$output,"/Allillumina2assembly/bamqc  --java-mem-size=2G"))
+system(paste0("samtools index ",opt$output,"/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted.bam "))
 
 
 
@@ -179,12 +182,10 @@ cat("##03 Blast",'\n')
 cat("##--------------------------------",'\n') 
 cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
 system(paste0("mkdir -p ",opt$output,"/Blast/"))
-cat(paste(c("hello","world_01")))
-
-cat(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam -outfmt 6 -db ", opt$db ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt -evalue 0.01 -word_size 12"))
+#cat(paste(c("hello","world_01")))
 
 
-system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/rawIllumina_bwamem_blast.txt -evalue 0.01 -word_size 12"))
+system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
@@ -202,13 +203,12 @@ if (opt$sniffles=="Y") {
   
   system(paste0("ngmlr -t ",opt$threads,
                 " -r ", opt$assembly ,
-                " -q ", opt$LongRead ,
-                " |samtools sort -@",opt$threads," -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam - " ))
+                " -q ", opt$LongRead , " -x ont |samtools sort -@",opt$threads," -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam - " ))
   
-  system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam"))
+  system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam"))
   
   
-  system(paste0("sniffles -t ", opt$threads , " -m " , opt$output ,"/rawReads2assembly_nglmr/mapping/rawReads_nglmrMapped_Scaffolds_sorted.bam -v " ,opt$output ,"/rawReads2assembly_nglmr/sniffles$Overall_output_directory/ngmlr_sniffles/sniffles/sniffles2assembly.vcf"))
+  system(paste0("sniffles -t ", opt$threads , " -m " , opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam -v " ,opt$output ,"/rawReads2assembly_nglmr/sniffles/",opt$name,"_sniffles2assembly.vcf"))
   
 
 } else {
