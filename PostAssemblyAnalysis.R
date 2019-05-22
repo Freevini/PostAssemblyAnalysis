@@ -186,7 +186,7 @@ system(paste0("mkdir -p ",opt$output,"/Blast/"))
 #cat(paste(c("hello","world_01")))
 
 
-system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 5 -max_target_seqs 5 -task megablast -show_gis -query ",opt$assembly, " -outfmt \" 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen \" -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
+system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 3 -max_target_seqs 3 -task megablast -show_gis -query ",opt$assembly, " -outfmt \" 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen \" -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
@@ -200,7 +200,8 @@ system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 5 -max_target_seqs
 
 if (opt$sniffles=="Y") {
   
-  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_Sniffles/{mapping,sniffles}" ))
+  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_Sniffles/mapping" ))
+  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_Sniffles/sniffles" ))
   
   system(paste0("ngmlr -t ",opt$threads,
                 " -r ", opt$assembly ,
