@@ -183,10 +183,10 @@ cat("##03 Blast",'\n')
 cat("##--------------------------------",'\n') 
 cat(paste(c("Start:",cat(as.character(Sys.time()[1]))), collapse='\t'), '\n')
 system(paste0("mkdir -p ",opt$output,"/Blast/"))
-cat(paste(c("hello","world_01")))
+#cat(paste(c("hello","world_01")))
 
 
-system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs 1 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
+system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 5 -max_target_seqs 5 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
@@ -200,16 +200,16 @@ system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 1 -max_target_seqs
 
 if (opt$sniffles=="Y") {
   
-  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_minimap2/{mapping,sniffles}" ))
+  system(paste0("mkdir -p ",opt$output,"/rawReads2assembly_Sniffles/{mapping,sniffles}" ))
   
   system(paste0("ngmlr -t ",opt$threads,
                 " -r ", opt$assembly ,
-                " -q ", opt$LongRead , " -x ont |samtools sort -@",opt$threads," -O BAM -o ", opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam - " ))
+                " -q ", opt$LongRead , " -x ont |samtools sort -@",opt$threads," -O BAM -o ", opt$output ,"/rawReads2assembly_Sniffles/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam - " ))
   
-  system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam"))
+  system(paste0("samtools index " ,opt$output ,"/rawReads2assembly_Sniffles/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam"))
   
   
-  system(paste0("sniffles -t ", opt$threads , " -m " , opt$output ,"/rawReads2assembly_nglmr/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam -v " ,opt$output ,"/rawReads2assembly_nglmr/sniffles/",opt$name,"_sniffles2assembly.vcf"))
+  system(paste0("sniffles -t ", opt$threads , " -m " , opt$output ,"/rawReads2assembly_Sniffles/mapping/",opt$name,"_rawReads_nglmrMapped_sorted.bam -v " ,opt$output ,"/rawReads2assembly_Sniffles/sniffles/",opt$name,"_sniffles2assembly.vcf"))
   
 
 } else {
