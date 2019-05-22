@@ -149,7 +149,7 @@ system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
 
 #system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
 
-system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted.bam - "))
+system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_Scaffolds_sorted.bam - "))
 # | samtools sort -@8 -O BAM -o $Overall_output_directory/0${num}_${run}Freebayes/rawIlluminaMapped/rawIllumina_${name}_bwamem_Assembly_sorted.bam -
 
 #system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
@@ -186,7 +186,7 @@ system(paste0("mkdir -p ",opt$output,"/Blast/"))
 #cat(paste(c("hello","world_01")))
 
 
-system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 5 -max_target_seqs 5 -task megablast -show_gis -query ",opt$assembly, " -outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
+system(paste0("blastn -num_threads " ,opt$threads," -max_hsps 5 -max_target_seqs 5 -task megablast -show_gis -query ",opt$assembly, " -outfmt \" 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle slen \" -db ", opt$BlastDB ," -out " ,opt$output,"/Blast/",opt$name,"_assembly_blast.txt -evalue 0.01 -word_size 12"))
 
 }else {
   cat("No BLASTdb: skipping blastn", '\n')
