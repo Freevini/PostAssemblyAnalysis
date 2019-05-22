@@ -149,7 +149,7 @@ system(paste0("mkdir -p ",opt$output,"/Allillumina2assembly/bamqc"))
 
 #system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$forward  , "\' > ",opt$output, "/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam"))
 
-system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_Scaffolds_sorted.bam - "))
+system(paste0("bwa mem -t ",opt$threads," ",opt$assembly ," \'<zcat ",opt$forward, " ",opt$reverse  , " \' | samtools sort -@",opt$threads," -O BAM -o ",opt$output, "/Allillumina2assembly/",opt$name,"_rawIllumina_bwamem_sorted.bam - "))
 # | samtools sort -@8 -O BAM -o $Overall_output_directory/0${num}_${run}Freebayes/rawIlluminaMapped/rawIllumina_${name}_bwamem_Assembly_sorted.bam -
 
 #system(paste0("samtools view -bS " ,opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds.sam | samtools sort - ",opt$output,"/Allillumina2assembly/rawIllumina_bwamem_Scaffolds_sorted "))
